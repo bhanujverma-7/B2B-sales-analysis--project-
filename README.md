@@ -55,22 +55,22 @@ There are **30 distinct products** divided into 5 categories,distributed to **17
 
 Excel files with multiple sheets
 
-             ↓
+ ↓
 
 Python
 (Data Cleaning + Transformation + EDA)
 
-             ↓
+  ↓
 
 PostgreSQL
 (Data Storage + SQL Analysis)
  
-             ↓
+  ↓
 
 Power BI
 (Data Modeling + Visualization)
  
-             ↓
+  ↓
 
 Business Insights & Recommendations
 
@@ -156,6 +156,63 @@ The cleaned dataframe is exported for further use and prepared for integration w
 
 The dataframe is intended to be loaded into a PostgreSQL `sales` table for subsequent SQL analysis and dashboard development.
 
+## SQL Analysis
+> Along with some basic questions answered, in this section there are multiple **complex queries** that identifies deep insights that are not visible directly.
+
+> The analysis is divided into 3 portions:
+1. CUSTOMER ANALYSIS
+2. PRODUCT ANALYSIS
+3. REGIONAL & GEOGRAPHIC ANALYSIS
+
+### Business Questions
+
+The SQL analysis focuses on questions such as:
+
+* Which customers generate the highest revenue and profit?
+* Which customers contribute the largest share of total revenue?
+* Which products generate the most revenue?
+* How concentrated is revenue among the top products?
+* Which regions generate the highest revenue?
+* Which states have the highest revenue **relative to population**?
+* Which products perform best in each state and region?
+* How does product performance vary across regions?
+* How is revenue changing **month over month**?
+* What is the **year-over-year** revenue performance of each state?
+* Are sales becoming increasingly dependent on a small number of customers or products?
+
+### Techniques used
+
+PostgreSQL was used to perform aggregations, ranking, revenue contribution analysis, window functions, running totals, and month-over-month/year-over-year growth calculations.
+
+Key SQL techniques include:
+
+* `GROUP BY`
+* Aggregate functions such as `SUM()`, `AVG()`, and `COUNT()`
+* `ORDER BY` and `LIMIT`
+* CTEs
+* `RANK()` and `ROW_NUMBER()`
+* `LAG()`
+* Window functions
+* Running totals
+* Revenue contribution percentages
+* Cumulative revenue analysis
+* MoM and YoY growth calculations
+
+### Business Objective
+
+The purpose is not only to identify what happened in the sales data, but to translate the results into actionable business questions around:
+
+* Customer prioritization
+* Product strategy
+* Regional expansion
+* Revenue concentration risk
+* Sales growth
+* Profitability improvement
+* Resource allocation
+
+The SQL results can then be used as a foundation for the Power BI dashboard and further business recommendations.
+
+
 ## 📊 Dashboard Pages
 
 ### Page 1 — Home
@@ -219,4 +276,19 @@ Helps grouping customers that
 | AVG Order Quantity | 8.44 |
 
 #### Visuals
->
+
+> *Donut Charts* - Divides the profit according to Regions, Channels, and Product category.
+
+> *Bar Chart with Slicer* - Shows **contribution in Revenue and Profit** by **Product, Customer, Category, Channel and State** , to be chosen from the dropdown slicer.
+
+> *Day/Month specific Table* - This table is made for a drill down analysis that shows which month and specifically which days in those months shows a trend of higher or lower revenue compared to others. (Summation of all years)
+
+This helps understand any events / holidays are making any differences in sales or not. And which time period is more valuable.
+
+>*Revenue Share vs Profit Share (%)* - Shows and compares contribution of customers share in revenue and profit. Helping understand where discounts are provided more as revenue looks high but profit low. 
+
+---
+
+## 🔑 Key Business Insights
+
+
