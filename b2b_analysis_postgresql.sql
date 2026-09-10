@@ -10,20 +10,19 @@
 SELECT *
 FROM sales;
 
-
 -- ============================================================
 -- 1. CUSTOMER ANALYSIS
 -- ============================================================
 
 -- 1.1 Top Customers by Revenue, Profit and Average Margin
 SELECT
-    customer_name,
+    product_name,
     SUM("revenue(USD)") AS revenue,
     SUM(profit) AS total_profit,
     AVG("profit_margin(%)") AS avg_profit_margin
 FROM sales
-GROUP BY customer_name
-ORDER BY revenue DESC;
+GROUP BY product_name
+ORDER BY avg_profit_margin DESC;
 
 
 -- 1.2 Top 5 Customers by Profit
@@ -46,24 +45,24 @@ GROUP BY customer_name
 ORDER BY purchase_days DESC, revenue DESC;
 
 
--- 1.4 Top 10 Customers by Share of Total Revenue
-WITH customer_revenue AS (
+-- 1.4 Customers by Share of Total Revenue and Cumulative Revenue
+
+SELECT
+    customer_name,
+    revenue / SUM(revenue) OVER () * 100 AS revenue_percentage,
+    SUM(revenue) OVER (
+        ORDER BY revenue DESC
+        ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+    ) / SUM(revenue) OVER () * 100 AS cumulative_revenue_percentage
+FROM (
     SELECT
         customer_name,
         SUM("revenue(USD)") AS revenue
     FROM sales
     GROUP BY customer_name
-)
-SELECT
-    customer_name,
-    revenue,
-    ROUND(
-        revenue * 100.0 / SUM(revenue) OVER (),
-        2
-    ) AS revenue_share_pct
-FROM customer_revenue
-ORDER BY revenue_share_pct DESC
-LIMIT 10;
+) AS customer_revenue
+ORDER BY revenue DESC;
+
 
 
 -- ============================================================
@@ -80,22 +79,14 @@ GROUP BY product_name
 ORDER BY avg_revenue DESC, avg_profit_margin DESC
 LIMIT 10;
 
-
--- 2.2 Revenue Contribution by Product
-SELECT
-    product_name,
-    SUM("revenue(USD)") AS revenue,
-    ROUND(
-        SUM("revenue(USD)") * 100.0
-        / SUM(SUM("revenue(USD)")) OVER (),
-        2
-    ) AS revenue_contribution_pct
+-- 2.2  Average Revenue and profit by product
+SELECT product_name, AVG("revenue(USD)") AS avg_revenue, AVG("profit_margin(%)") AS avg_profit
 FROM sales
-GROUP BY product_name
-ORDER BY revenue_contribution_pct DESC;
+group by product_name
+order by avg_revenue DESC, avg_profit 
+limit 10
 
-
--- 2.3 Revenue Concentration by Product
+-- 2.3 Total Revenue Concentration by Product
 WITH product_revenue AS (
     SELECT
         product_name,
@@ -117,8 +108,12 @@ ranked_products AS (
 SELECT
     product_name,
     revenue,
+	ROUND(
+        (revenue * 100.0 / total_revenue)::numeric,
+        2
+    ) AS revenue_pct,
     ROUND(
-        cumulative_revenue * 100.0 / total_revenue,
+        (cumulative_revenue * 100.0 / total_revenue)::numeric,
         2
     ) AS cumulative_revenue_pct
 FROM ranked_products
@@ -137,8 +132,31 @@ FROM sales
 GROUP BY region
 ORDER BY revenue DESC;
 
+-- 3.2  Revenue and Profit by state and region
+SELECT
+    state,
+    region,
+    SUM("revenue(USD)") AS revenue,
+    SUM(profit) AS profit,
+    ROUND(
+        (
+            SUM("revenue(USD)")::numeric
+            / SUM(SUM("revenue(USD)")) OVER ()::numeric
+        ) * 100,
+        2
+    ) AS revenue_pct,
+    ROUND(
+        (
+            SUM(profit)::numeric
+            / SUM(SUM(profit)) OVER ()::numeric
+        ) * 100,
+        2
+    ) AS profit_pct
+FROM sales
+GROUP BY state, region
+ORDER BY revenue DESC, region;
 
--- 3.2 Revenue per Capita by State
+-- 3.3 Revenue per Capita by State
 SELECT
     state,
     SUM("revenue(USD)") / NULLIF(AVG(population), 0) AS revenue_per_capita
@@ -147,7 +165,7 @@ GROUP BY state
 ORDER BY revenue_per_capita DESC;
 
 
--- 3.3 Top Product in Every State by Revenue
+-- 3.4 Top Product in Every State by Revenue
 WITH product_sales AS (
     SELECT
         state,
@@ -169,7 +187,7 @@ WHERE rank = 1
 ORDER BY state;
 
 
--- 3.4 Top 5 Products in Each Region by Revenue
+-- 3.5 Top 5 Products in Each Region by Revenue
 WITH regional_products AS (
     SELECT
         region,
@@ -194,7 +212,7 @@ WHERE rank <= 5
 ORDER BY region, rank;
 
 
--- 3.5 Product Performance Across Regions
+-- 3.6 Product Performance Across Regions
 SELECT
     product_name,
     region,
