@@ -216,11 +216,11 @@ The SQL results can then be used as a foundation for the Power BI dashboard and 
 ## 📊 Dashboard Pages
 
 ### Page 1 — Home
-![HOME](DB_SS/Capture0.png)
+![HOME](DB_SS/home.PNG)
 Navigation landing page with links to all pages.
 
 ### Page 2 — Executive Summary
-![Executive Overview](DB_SS/Capture.png)
+![Executive Overview](DB_SS/summary.PNG)
 
 #### Cards
 
@@ -241,7 +241,7 @@ To understand which divisions are producing more revenue and at those places bus
  
 
 ### Page 3 — Customer Analysis
-![Customer Analysis](DB_SS/Capture2.5.png)
+![Customer Analysis](DB_SS/customer.PNG)
 
 | Card | Value |
 |-----|-------|
@@ -283,7 +283,7 @@ Small value
 >*Table* - Shows **Top 15 Customers** , sorted by Number of orders/ Revenue/ **Profit**.
 
 ### Page 4 — Revenue/Profit Analysis
-![Revenue/Profit Analysis](DB_SS/Capture2.png)
+![Revenue/Profit Analysis](DB_SS/revenue.PNG)
 
 | Card | Value |
 |-----|-------|
